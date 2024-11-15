@@ -7,6 +7,7 @@ from collections.abc import Callable
 from datetime import datetime
 from enum import StrEnum
 from typing import Any, cast
+import os
 
 import httpx
 from anthropic import (
@@ -97,13 +98,19 @@ async def sampling_loop(
         type="text",
         text=f"{SYSTEM_PROMPT}{' ' + system_prompt_suffix if system_prompt_suffix else ''}",
     )
+    
+    print("api_key")
+    print(api_key)
+    base_url = os.getenv("BASE_URL", "empty_base_url")
+    print("base_url")
+    print(base_url)
 
     while True:
         enable_prompt_caching = False
         betas = [COMPUTER_USE_BETA_FLAG]
         image_truncation_threshold = 10
         if provider == APIProvider.ANTHROPIC:
-            client = Anthropic(api_key=api_key)
+            client = Anthropic(api_key=api_key, base_url=base_url)
             enable_prompt_caching = True
         elif provider == APIProvider.VERTEX:
             client = AnthropicVertex()
